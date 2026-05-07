@@ -33,6 +33,18 @@ const items: Item[] = [
   { href: "#contact", label: "Contact", Icon: Mail },
 ];
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = React.useState(false);
+  React.useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px) and (hover: hover)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return isDesktop;
+}
+
 function DockLabel({ label }: { label: string }) {
   return (
     <motion.span
@@ -52,7 +64,11 @@ function DockItem({
   label,
   href,
   mouseX,
-}: Item & { mouseX: ReturnType<typeof useMotionValue<number>> }) {
+  isDesktop,
+}: Item & {
+  mouseX: ReturnType<typeof useMotionValue<number>>;
+  isDesktop: boolean;
+}) {
   const ref = React.useRef<HTMLAnchorElement | null>(null);
   const [hover, setHover] = React.useState(false);
 
@@ -61,31 +77,38 @@ function DockItem({
     return val - bounds.x - bounds.width / 2;
   });
 
+  // Magnetic grow only on desktop with a real pointer.
   const widthSync = useTransform(distance, [-140, 0, 140], [40, 64, 40]);
-  const width = useSpring(widthSync, { mass: 0.1, stiffness: 220, damping: 18 });
+  const widthSpring = useSpring(widthSync, {
+    mass: 0.1,
+    stiffness: 220,
+    damping: 18,
+  });
 
   return (
     <motion.a
       ref={ref}
       href={href}
-      style={{ width }}
+      style={isDesktop ? { width: widthSpring } : undefined}
       aria-label={label}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onFocus={() => setHover(true)}
       onBlur={() => setHover(false)}
-      className="relative aspect-square grid place-items-center rounded-full bg-card/60 border border-border/60 text-muted-foreground hover:text-foreground transition-colors"
+      className="relative aspect-square grid place-items-center rounded-full bg-card/60 border border-border/60 text-muted-foreground hover:text-foreground transition-colors w-9 md:w-10 shrink-0"
     >
       <Icon className="h-[45%] w-[45%]" strokeWidth={1.6} />
-      {hover ? <DockLabel label={label} /> : null}
+      {hover && isDesktop ? <DockLabel label={label} /> : null}
     </motion.a>
   );
 }
 
 function ThemeToggle({
   mouseX,
+  isDesktop,
 }: {
   mouseX: ReturnType<typeof useMotionValue<number>>;
+  isDesktop: boolean;
 }) {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
@@ -97,17 +120,21 @@ function ThemeToggle({
     return val - bounds.x - bounds.width / 2;
   });
   const widthSync = useTransform(distance, [-140, 0, 140], [40, 64, 40]);
-  const width = useSpring(widthSync, { mass: 0.1, stiffness: 220, damping: 18 });
+  const widthSpring = useSpring(widthSync, {
+    mass: 0.1,
+    stiffness: 220,
+    damping: 18,
+  });
 
   const isDark = (mounted ? resolvedTheme ?? theme : "light") === "dark";
 
   return (
     <motion.button
       ref={ref}
-      style={{ width }}
+      style={isDesktop ? { width: widthSpring } : undefined}
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label="Toggle theme"
-      className="aspect-square grid place-items-center rounded-full bg-card/60 border border-border/60 text-muted-foreground hover:text-foreground transition-colors"
+      className="aspect-square grid place-items-center rounded-full bg-card/60 border border-border/60 text-muted-foreground hover:text-foreground transition-colors w-9 md:w-10 shrink-0"
     >
       {isDark ? (
         <Sun className="h-[45%] w-[45%]" strokeWidth={1.6} />
@@ -120,18 +147,20 @@ function ThemeToggle({
 
 export function NavDock() {
   const mouseX = useMotionValue<number>(Number.POSITIVE_INFINITY);
+  const isDesktop = useIsDesktop();
 
   return (
     <motion.nav
       initial={{ y: 80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.6, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      onMouseMove={(e) => mouseX.set(e.pageX)}
+      onMouseMove={(e) => isDesktop && mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Number.POSITIVE_INFINITY)}
       className={cn(
-        "fixed bottom-5 left-1/2 -translate-x-1/2 z-50",
-        "flex items-end gap-2 px-3 py-2 rounded-full",
-        "glass-strong border border-border/60 shadow-[0_18px_60px_-20px_oklch(0.45_0.08_195/0.35)]"
+        "fixed bottom-4 left-1/2 -translate-x-1/2 z-50",
+        "flex items-end gap-1 md:gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-full",
+        "glass-strong border border-border/60 shadow-[0_18px_60px_-20px_oklch(0.45_0.08_195/0.35)]",
+        "max-w-[calc(100vw-1rem)]"
       )}
     >
       <Link
@@ -144,10 +173,10 @@ export function NavDock() {
         Dr. Mahek
       </Link>
       {items.map((item) => (
-        <DockItem key={item.href} {...item} mouseX={mouseX} />
+        <DockItem key={item.href} {...item} mouseX={mouseX} isDesktop={isDesktop} />
       ))}
-      <div className="w-px h-8 self-center bg-border/80 mx-1" />
-      <ThemeToggle mouseX={mouseX} />
+      <div className="w-px h-7 md:h-8 self-center bg-border/80 mx-0.5 md:mx-1 shrink-0" />
+      <ThemeToggle mouseX={mouseX} isDesktop={isDesktop} />
     </motion.nav>
   );
 }
