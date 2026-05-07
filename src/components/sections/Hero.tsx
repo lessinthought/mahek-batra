@@ -13,22 +13,38 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { HEADSHOT_IMG, PROFILE_IMG, resume } from "@/lib/resume";
 import { SPLINE_HERO_SCENE } from "@/components/primitives/SplineScene";
+import { LazyVisible } from "@/components/primitives/LazyVisible";
 
 const SplineScene = dynamic(
   () => import("@/components/primitives/SplineScene").then((m) => m.SplineScene),
   { ssr: false }
 );
 
+function useHasFinePointer() {
+  const [fine, setFine] = React.useState(false);
+  React.useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setFine(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return fine;
+}
+
 export function Hero() {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const hasPointer = useHasFinePointer();
 
-  // Mouse parallax
+  // Mouse parallax — only enabled with a fine pointer (desktop). On touch
+  // devices the per-frame motion-value updates would tank scroll perf.
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const smx = useSpring(mx, { stiffness: 80, damping: 18 });
   const smy = useSpring(my, { stiffness: 80, damping: 18 });
 
   function handleMove(e: React.MouseEvent) {
+    if (!hasPointer) return;
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
     const px = (e.clientX - rect.left) / rect.width - 0.5;
@@ -218,12 +234,12 @@ export function Hero() {
               transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
               className="absolute inset-0"
             >
-              <SplineScene
-                scene={SPLINE_HERO_SCENE}
-                className="absolute inset-0"
-              />
-              {/* Mask the Spline watermark */}
-              <div className="absolute bottom-2 right-2 h-10 w-44 bg-background rounded-md pointer-events-none" />
+              <LazyVisible className="absolute inset-0">
+                <SplineScene
+                  scene={SPLINE_HERO_SCENE}
+                  className="absolute inset-0"
+                />
+              </LazyVisible>
             </motion.div>
 
             {/* B&W portrait card — floating */}

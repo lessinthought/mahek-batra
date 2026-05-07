@@ -19,6 +19,8 @@ import { TiltCard } from "@/components/primitives/TiltCard";
 import { Marquee } from "@/components/primitives/Marquee";
 import { resume } from "@/lib/resume";
 
+import { LazyVisible } from "@/components/primitives/LazyVisible";
+
 const SplineScene = dynamic(
   () => import("@/components/primitives/SplineScene").then((m) => m.SplineScene),
   { ssr: false }
@@ -63,9 +65,9 @@ export function Skills() {
                   backgroundSize: "20px 20px",
                 }}
               />
-              <SplineScene scene={HOSPITAL_SCENE} className="absolute inset-0" />
-              {/* Mask Spline watermark */}
-              <div className="absolute bottom-2 right-2 h-10 w-44 bg-card rounded-md pointer-events-none" />
+              <LazyVisible className="absolute inset-0">
+                <SplineScene scene={HOSPITAL_SCENE} className="absolute inset-0" />
+              </LazyVisible>
               <div className="absolute bottom-5 left-5 right-5 px-4 py-3 rounded-2xl glass-strong border border-border/60 pointer-events-none">
                 <div className="text-[10px] uppercase tracking-[0.22em] font-mono text-muted-foreground">
                   Specialty

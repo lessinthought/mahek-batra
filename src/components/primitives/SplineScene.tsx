@@ -16,7 +16,29 @@ type Props = {
   className?: string;
   onLoad?: () => void;
   fallback?: React.ReactNode;
+  // When true (default), the scene won't mount on mobile / coarse-pointer
+  // devices and the fallback is shown instead. Spline runtime + scene files
+  // are too heavy for low-end mobile GPUs.
+  skipOnMobile?: boolean;
 };
+
+function useShouldRender(skipOnMobile: boolean) {
+  const [shouldRender, setShouldRender] = React.useState(!skipOnMobile);
+  React.useEffect(() => {
+    if (!skipOnMobile) {
+      setShouldRender(true);
+      return;
+    }
+    const mq = window.matchMedia(
+      "(min-width: 768px) and (hover: hover) and (pointer: fine)"
+    );
+    const update = () => setShouldRender(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [skipOnMobile]);
+  return shouldRender;
+}
 
 class SplineErrorBoundary extends React.Component<
   { children: React.ReactNode; onError: () => void },
@@ -83,7 +105,14 @@ function isSplineErrorEvent(filename?: string, message?: string) {
   );
 }
 
-export function SplineScene({ scene, className, onLoad, fallback }: Props) {
+export function SplineScene({
+  scene,
+  className,
+  onLoad,
+  fallback,
+  skipOnMobile = true,
+}: Props) {
+  const shouldRender = useShouldRender(skipOnMobile);
   const [loaded, setLoaded] = React.useState(false);
   const [hardFailed, setHardFailed] = React.useState(false);
   const loadedRef = React.useRef(false);
@@ -158,7 +187,7 @@ export function SplineScene({ scene, className, onLoad, fallback }: Props) {
     };
   }, []);
 
-  if (hardFailed) {
+  if (hardFailed || !shouldRender) {
     return <div className={className}>{fallback ?? <DefaultFallback />}</div>;
   }
 

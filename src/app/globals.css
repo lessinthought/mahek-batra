@@ -164,23 +164,36 @@
     font-style: italic;
   }
   .glass {
-    background: color-mix(in oklch, var(--card) 70%, transparent);
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    background: color-mix(in oklch, var(--card) 92%, transparent);
   }
   .glass-strong {
-    background: color-mix(in oklch, var(--card) 85%, transparent);
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    background: color-mix(in oklch, var(--card) 95%, transparent);
   }
-  .grain::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.06;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+  /* GPU-cheap on mobile: solid-ish backgrounds, no blur. Opt-in to real glass on
+     larger screens where the GPU can handle it. */
+  @media (min-width: 768px) {
+    .glass {
+      background: color-mix(in oklch, var(--card) 70%, transparent);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+    }
+    .glass-strong {
+      background: color-mix(in oklch, var(--card) 85%, transparent);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+    }
+  }
+  /* Decorative noise — desktop only. mix-blend-mode is expensive on mobile GPUs. */
+  @media (min-width: 768px) {
+    .grain::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.06;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+    }
   }
   .mask-fade-x {
     -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
