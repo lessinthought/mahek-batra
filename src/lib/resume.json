@@ -1,0 +1,99 @@
+{
+  "personal_information": {
+    "name": "Dr. Mahek Batra",
+    "title": "Resident Dentist (Gold Medalist)",
+    "total_experience": "1 Year 0 Month",
+    "phone": "(+91) 9158466269",
+    "email": "Drmahekbatra@gmail.com",
+    "location": {
+      "city": "Nagpur",
+      "country": "INDIA"
+    }
+  },
+  "profile_summary": "MDS (Conservative Dentistry & Endodontics) Resident and Gold Medalist with four publications and a government-registered research copyright. Skilled in medical and scientific writing, research analysis, and clinical practice with six academic distinctions. Seeking remote opportunities in medical writing, research, and healthcare communication to contribute impactful insights and academic excellence.",
+  "key_skills": [
+    "Medical & Scientific Writing Skills",
+    "Research & Data Analysis",
+    "Digital Communication & Collaboration",
+    "Time Management & Multitasking",
+    "Tech Adaptability",
+    "Presentation & Documentation Skill"
+  ],
+  "education": [
+    {
+      "degree": "MDS",
+      "year": "2028",
+      "institution": "Index Institute of Dental Sciences"
+    },
+    {
+      "degree": "BDS",
+      "year": "2024",
+      "institution": "Sharad Pawar Dental College, Wardha"
+    },
+    {
+      "degree": "12th",
+      "year": "2019",
+      "board": "Maharashtra",
+      "medium": "English"
+    },
+    {
+      "degree": "10th",
+      "year": "2017",
+      "board": "CBSE",
+      "medium": "English"
+    }
+  ],
+  "work_experience": [
+    {
+      "title": "Resident Dentist (Gold Medalist)",
+      "company": "Sharad Pawar Dental College",
+      "duration": "Oct 2023 - Nov 2024",
+      "highlights": [
+        "Actively participated in dental camps, academic seminars, and case discussions to broaden practical skills and theoretical understanding",
+        "Achieved academic excellence with a Gold Medal for highest marks and distinctions in six subjects",
+        "Published four case reports, demonstrating a commitment to academic research and knowledge dissemination",
+        "Secured a copyright for original research, showcasing capability in contributing to academic and clinical excellence"
+      ]
+    },
+    {
+      "title": "Vice President",
+      "company": "Sharad Pawar Dental College",
+      "duration": "Oct 2023 - Nov 2024",
+      "highlights": []
+    },
+    {
+      "title": "Community leader",
+      "company": "Unschool",
+      "duration": "Feb 2021 - Aug 2021",
+      "highlights": [
+        "Spearheaded community engagement initiatives, resulting in a 30% increase in active participation within the first six months of assuming the role.",
+        "Implemented a new feedback system, leading to a 20% improvement in member satisfaction and retention.",
+        "Hosted and managed 10 successful events, contributing to a 25% growth in community membership."
+      ]
+    }
+  ],
+  "internship": {
+    "duration": "12 Months",
+    "institution": "Datta Meghe Institute of Medical Sciences (DMIMS)"
+  },
+  "research_and_projects": {
+    "duration": "60 Days",
+    "description": "Conducted four clinical case reports and an original research study on oral lesions. This case report discusses a 28-year-old male patient presenting with bilateral white striations and an erythematous lesion on the buccal mucosa. The patient was treated with corticosteroids, resulting in significant symptomatic relief and partial lesion regression over six months. The report emphasizes the importance of early diagnosis and tailored therapeutic strategies in managing oral lichen planus to improve patient outcomes."
+  },
+  "certifications": [
+    "Coursera Introduction to the biology and cancer",
+    "HPV-Associated Oral and Throat Cancer: What You Need to Know",
+    "Antimicrobial resistance theory and methods"
+  ],
+  "languages": [
+    "English",
+    "Hindi",
+    "Sindhi",
+    "Marathi"
+  ],
+  "hobbies": [
+    "Content Creation",
+    "Travel & Exploring Cultures",
+    "Research Writing & Scientific Reading"
+  ]
+}
