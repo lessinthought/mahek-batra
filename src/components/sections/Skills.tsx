@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import dynamic from "next/dynamic";
 import { motion } from "motion/react";
 import {
   PenLine,
@@ -17,16 +16,17 @@ import {
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { TiltCard } from "@/components/primitives/TiltCard";
 import { Marquee } from "@/components/primitives/Marquee";
+import { GooeyText } from "@/components/ui/gooey-text-morphing";
 import { resume } from "@/lib/resume";
 
-import { LazyVisible } from "@/components/primitives/LazyVisible";
-
-const SplineScene = dynamic(
-  () => import("@/components/primitives/SplineScene").then((m) => m.SplineScene),
-  { ssr: false }
-);
-
-const HOSPITAL_SCENE = "/hospital.splinecode";
+const MORPH_WORDS = [
+  "Care.",
+  "Science.",
+  "Stories.",
+  "Smiles.",
+  "Research.",
+  "Endodontics.",
+];
 
 const SKILL_ICONS: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
   "Medical & Scientific Writing Skills": PenLine,
@@ -53,7 +53,7 @@ export function Skills() {
         />
 
         <div className="mt-16 grid grid-cols-12 gap-6 md:gap-8 items-stretch">
-          {/* 3D hospital showpiece */}
+          {/* Gooey text showpiece */}
           <div className="col-span-12 lg:col-span-5 relative">
             <div className="relative h-full min-h-[440px] rounded-3xl overflow-hidden border border-border/70 bg-gradient-to-br from-brand-soft via-card to-card">
               <div
@@ -65,9 +65,34 @@ export function Skills() {
                   backgroundSize: "20px 20px",
                 }}
               />
-              <LazyVisible className="absolute inset-0">
-                <SplineScene scene={HOSPITAL_SCENE} className="absolute inset-0" />
-              </LazyVisible>
+
+              {/* Soft glow accent behind the morphing text */}
+              <div
+                aria-hidden
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-72 w-72 rounded-full blur-3xl opacity-50 pointer-events-none"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(112,196,184,0.55) 0%, rgba(244,178,170,0.4) 55%, rgba(112,196,184,0) 80%)",
+                }}
+              />
+
+              {/* Tiny corner label */}
+              <div className="absolute top-5 left-5 text-[10px] uppercase tracking-[0.22em] font-mono text-muted-foreground">
+                What she does
+              </div>
+
+              {/* Morphing word — sized to fit the panel without overflow */}
+              <div className="absolute inset-0 flex items-center justify-center px-6">
+                <GooeyText
+                  texts={MORPH_WORDS}
+                  morphTime={0.9}
+                  cooldownTime={1.4}
+                  className="w-full h-32 sm:h-40"
+                  textClassName="font-display font-medium tracking-tight text-5xl sm:text-6xl md:text-[64px] text-foreground"
+                />
+              </div>
+
+              {/* Specialty card overlay */}
               <div className="absolute bottom-5 left-5 right-5 px-4 py-3 rounded-2xl glass-strong border border-border/60 pointer-events-none">
                 <div className="text-[10px] uppercase tracking-[0.22em] font-mono text-muted-foreground">
                   Specialty

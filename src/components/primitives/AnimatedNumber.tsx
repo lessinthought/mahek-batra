@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useInView, useMotionValue, useSpring, useTransform } from "motion/react";
+import { animate, useMotionValue, useTransform, motion } from "motion/react";
 
 type Props = {
   to: number;
@@ -9,6 +9,7 @@ type Props = {
   suffix?: string;
   prefix?: string;
   className?: string;
+  duration?: number;
 };
 
 export function AnimatedNumber({
@@ -17,19 +18,69 @@ export function AnimatedNumber({
   suffix = "",
   prefix = "",
   className,
+  duration = 1.6,
 }: Props) {
   const ref = React.useRef<HTMLSpanElement | null>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-
-  const value = useMotionValue(0);
-  const spring = useSpring(value, { stiffness: 70, damping: 22, mass: 0.8 });
-  const display = useTransform(spring, (latest) =>
+  // Start at target so SSR / first paint already shows the correct value.
+  // We animate from 0 → to once the element comes into view.
+  const value = useMotionValue<number>(to);
+  const display = useTransform(value, (latest) =>
     `${prefix}${latest.toFixed(decimals)}${suffix}`
   );
 
   React.useEffect(() => {
-    if (inView) value.set(to);
-  }, [inView, to, value]);
+    const node = ref.current;
+    if (!node) return;
+    let played = false;
+    let safetyTimer: ReturnType<typeof setTimeout> | null = null;
 
-  return <motion.span ref={ref} className={className}>{display}</motion.span>;
+    function play() {
+      if (played) return;
+      played = true;
+      value.set(0);
+      // requestAnimationFrame so the 0 paints before we kick off the animation
+      requestAnimationFrame(() => {
+        animate(value, to, { duration, ease: [0.16, 1, 0.3, 1] });
+      });
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      play();
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            play();
+            io.disconnect();
+            if (safetyTimer) clearTimeout(safetyTimer);
+            break;
+          }
+        }
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(node);
+
+    // Safety net: if the observer hasn't fired within 1.6s of mount (e.g. the
+    // element is already on-screen on first paint, or the IO is being flaky on
+    // mobile), play the animation anyway.
+    safetyTimer = setTimeout(() => {
+      play();
+      io.disconnect();
+    }, 1600);
+
+    return () => {
+      io.disconnect();
+      if (safetyTimer) clearTimeout(safetyTimer);
+    };
+  }, [to, duration, value]);
+
+  return (
+    <motion.span ref={ref} className={className}>
+      {display}
+    </motion.span>
+  );
 }
